@@ -39,12 +39,16 @@ if [[ $pipeline == "dry" ]]; then
     echo "------------------------------------------------------------------------"
 	echo "*** STARTING DryRun ***"
     module load snakemake python
+    if [[ ! -d $output_dir ]]; then mkdir $output_dir; fi
+    cp config/snakemake_config.yaml $output_dir/config/snakemake_config.yaml 
+    sed -i "s/OUTPUT_dir/$output_dir/g" $output_dir/config/snakemake_config.yaml
+    sed -i "s/PIPELINE_dir/$PIPELINE_HOME/g" $output_dir/config/snakemake_config.yaml
 
     snakemake -s workflow/Snakefile \
-    --configfile config/snakemake_config.yaml \
+    --configfile $output_dir/config/snakemake_config.yaml \
     --printshellcmds \
     --verbose \
-    --rerun-incomplete \
+    --rerun-incomplete
     -npr
 
 elif [[ $pipeline == "run" ]]; then
@@ -58,7 +62,7 @@ elif [[ $pipeline == "run" ]]; then
     sed -i "s/PIPELINE_dir/$PIPELINE_HOME/g" $output_dir/config/snakemake_config.yaml
 
     snakemake -s workflow/Snakefile \
-    --configfile config/snakemake_config.yaml \
+    --configfile $output_dir/config/snakemake_config.yaml \
     --printshellcmds \
     --verbose \
     --rerun-incomplete
