@@ -45,6 +45,7 @@ The task can be broken up into A. pre-processing, B. sample handling, C. rule cr
 ## C. Create rules
 
 - Create rule_all for each rule one at a time in the `workflow/Snakefile`.
+- Create rule_all input for all input files, from the `file_list`
 - Perform dry runs and complete runs between each rule creation.
 - Rule A
     - input files should be `{sample_id}.fq`
