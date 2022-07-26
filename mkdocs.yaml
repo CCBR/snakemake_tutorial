@@ -98,5 +98,5 @@ nav:
   - Background : index.md
   - Usage: 
     - 1. Getting Started : usage/getting-started.md
-    - 2. Snakemake Task: usage/task.md
-    - 3. Snakemake Example: usage/example.md
+    - 2. Snakemake Activity: usage/task.md
+    - 3. Snakemake Completed Example: usage/example.md
