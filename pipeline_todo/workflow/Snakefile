@@ -16,10 +16,12 @@ import csv
 ###############################################################
 #dict sample_id: filename
 def CreateSampleDicts(df_s):
+
     return(s_dict)
 
 #create lists of sample ids, filenames
 def CreateProjLists(dict_s):
+
     return(sp_list,file_list)
 
 ###############################################################
@@ -27,11 +29,16 @@ def CreateProjLists(dict_s):
 ###############################################################
 #get list of fq names based on multiplex name
 def get_input_files(wildcards):
+
     return(fq)
 
 def get_rulec_cmd(wildcards):
+
     return(cmd)
-    
+
+def get_ruled_cmd(wildcards):
+
+    return(cmd)
 ###############################################################
 # main code
 ###############################################################
@@ -57,25 +64,28 @@ rule all:
 
         # ruleC output
 
+        # ruleD output
 
-ruleA:
-    input:
-    output:
-    shell:
-        '''
-        '''
+# rule A:
+#     input:
+#     output:
+#     shell:
 
-ruleB:
-    input:
-    output:
-    shell:
-        '''
-        '''
 
-ruleC:
-    input:
-    params:
-    output:
-    shell:
-        '''
-        '''
+# rule B:
+#     input:
+#     output:
+#     shell:
+
+# rule C:
+#     input:
+#     params:
+#     output:
+#     shell:
+
+
+# rule D:
+#     input:
+#     params:
+#     output:
+#     shell:
