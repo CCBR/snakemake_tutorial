@@ -15,5 +15,10 @@ cd /path/to/working/dir
 
 git clone https://github.com/slsevilla/snakemake_tutorial.git
 
-cd snakemake_tutorial/pipeline_todo
+cd snakemake_tutorial
 ```
+
+## Completing the Activty
+Two diretories were created within the repo. The `pipeline_todo` directory should be used to complete the tutorial, editing all files as needed. The `pipeline_example` directory has the activity completed and should be used a reference for completing each of the tasks.
+
+NOTE: There are multiple ways to complete each rule, so review the expected outputs within the `pipeline_example/output` directory if your code varies.
