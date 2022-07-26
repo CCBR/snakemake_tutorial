@@ -31,16 +31,23 @@ if [ -z "$pipeline" ] || [ -z "$output_dir" ]; then
    helpFunction
 fi
 
+#remove trailing / on directories
+output_dir=$(echo $output_dir | sed 's:/*$::')
+
+# set source_dir
+PIPELINE_HOME=$(readlink -f $(dirname "$0"))
 
 if [[ $pipeline == "dry" ]]; then
     echo "------------------------------------------------------------------------"
 	echo "*** STARTING DryRun ***"
-
+    module load snakemake python
 
 elif [[ $pipeline == "run" ]]; then
     echo "------------------------------------------------------------------------"
 	echo "*** STARTING Local Execution ***"
- 
+    module load snakemake python
+
+
 else 
     echo "Select the options dry or run with the -p flag"
 
