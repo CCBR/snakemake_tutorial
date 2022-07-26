@@ -1,0 +1,120 @@
+from os.path import join
+import pandas as pd
+from collections import defaultdict
+import yaml
+import csv
+
+###############################################################
+# set snakemake config params
+###############################################################
+# dir paths
+out_dir = config['out_dir']
+data_dir = config['data_dir']
+
+# manifests
+sample_manifest = config['sampleManifest']
+
+###############################################################
+# create sample lists
+###############################################################
+#dict sample_id: filename
+def CreateSampleDicts(df_s):
+    s_dict={}
+    s_dict = dict(zip(df_s.sample_id, df_s.filename))
+
+    return(s_dict)
+
+#create lists of sample ids, filenames
+def CreateProjLists(dict_s):
+    sp_list = []
+    file_list = []
+
+    #multiplex,sample
+    for k,v in dict_s.items():
+        file_list.append(k)
+        sp_list.append(v)
+    return(sp_list,file_list)
+
+###############################################################
+# snakemake functions
+###############################################################
+#get list of fq names based on multiplex name
+def get_input_files(wildcards):
+    #example: {data_dir}/{sample_id.fastq.gz}
+    fq = join(data_dir,samp_dict[wildcards.sp])
+    return(fq)
+
+def get_rulec_cmd(wildcards):
+    cmd=''
+    for sp in sp_list:
+        # set source (ruleB) and destination files
+        source = join(out_dir, sp + '_ruleB.txt')
+        destination = join(out_dir, 'merged.txt')
+
+        # create command
+        cmd = 'cat ' + source + ' >> ' + destination + '; ' + cmd
+    return(cmd)
+    
+###############################################################
+# main code
+###############################################################
+#read manifests
+df_samples = pd.read_csv(sample_manifest,sep=",")
+
+#create dicts
+(samp_dict) = CreateSampleDicts(df_samples)
+
+#create unique sample_id and filename_list
+#sp_list    filename
+#sample1        sample1.fq
+#sample1        sample2.fq
+(sp_list,file_list) = CreateProjLists(samp_dict)
+
+rule all:
+    input:
+        # input files
+        expand(join(data_dir,'{fq}'),fq=file_list)
+
+        # ruleA output
+        expand(join(out_dir,'{sp}_rulea.txt'),sp=sp_list)
+ 
+        # ruleB output
+        expand(join(out_dir,'{sp}_ruleb.txt'),sp=sp_list)
+
+        # ruleC output
+        expand(join(out_dir,'merged.txt'))
+
+
+ruleA:
+    input:
+        fq = join(data_dir,'{sp}.tsv')
+    output:
+        final = join(out_dir,'{sp}_rulea.txt')
+    shell:
+        '''
+        cat {input.fq} > {output.final}
+        echo "ruleA" >> {output.final}
+        '''
+
+ruleB:
+    input:
+        fq = get_input_files
+    output:
+        final = join(out_dir,'{sp}_ruleb.txt')
+    shell:
+        '''
+        cat {input.fq} > {output.final}
+        echo "ruleB" >> {output.final}
+        '''
+
+ruleC:
+    input:
+        grouped = expand(join(out_dir,'{sp}_ruleb.txt'))
+    params:
+        cmd = cmd_rulec
+    output:
+        final = join(out_dir,'merged.txt')
+    shell:
+        '''
+        {params.rulec}
+        '''

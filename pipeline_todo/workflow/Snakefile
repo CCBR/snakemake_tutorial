@@ -1,0 +1,81 @@
+from os.path import join
+import pandas as pd
+from collections import defaultdict
+import yaml
+import csv
+
+###############################################################
+# set snakemake config params
+###############################################################
+# dir paths
+
+# manifests
+
+###############################################################
+# create sample lists
+###############################################################
+#dict sample_id: filename
+def CreateSampleDicts(df_s):
+    return(s_dict)
+
+#create lists of sample ids, filenames
+def CreateProjLists(dict_s):
+    return(sp_list,file_list)
+
+###############################################################
+# snakemake functions
+###############################################################
+#get list of fq names based on multiplex name
+def get_input_files(wildcards):
+    return(fq)
+
+def get_rulec_cmd(wildcards):
+    return(cmd)
+    
+###############################################################
+# main code
+###############################################################
+#read manifests
+df_samples = pd.read_csv(sample_manifest,sep=",")
+
+#create dicts
+(samp_dict) = CreateSampleDicts(df_samples)
+
+#create unique sample_id and filename_list
+#sp_list    filename
+#sample1        sample1.fq
+#sample1        sample2.fq
+(sp_list,file_list) = CreateProjLists(samp_dict)
+
+rule all:
+    input:
+        # input files
+
+        # ruleA output
+ 
+        # ruleB output
+
+        # ruleC output
+
+
+ruleA:
+    input:
+    output:
+    shell:
+        '''
+        '''
+
+ruleB:
+    input:
+    output:
+    shell:
+        '''
+        '''
+
+ruleC:
+    input:
+    params:
+    output:
+    shell:
+        '''
+        '''
