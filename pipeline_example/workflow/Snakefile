@@ -87,7 +87,6 @@ df_samples = pd.read_csv(sample_manifest,sep=",")
 #sample1        sample2.fq
 (sp_list,file_list) = CreateProjLists(samp_dict)
 
-print(sp_list)
 rule all:
     input:
         # input files
