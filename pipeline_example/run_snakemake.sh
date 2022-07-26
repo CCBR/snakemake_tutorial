@@ -31,6 +31,9 @@ if [ -z "$pipeline" ] || [ -z "$output_dir" ]; then
    helpFunction
 fi
 
+# set source_dir
+PIPELINE_HOME=$(readlink -f $(dirname "$0"))
+
 
 if [[ $pipeline == "dry" ]]; then
     echo "------------------------------------------------------------------------"
@@ -48,6 +51,11 @@ elif [[ $pipeline == "run" ]]; then
     echo "------------------------------------------------------------------------"
 	echo "*** STARTING Local Execution ***"
     module load snakemake python
+
+    if [[ ! -d $output_dir ]]; then mkdir $output_dir; fi
+    cp config/snakemake_config.yaml $output_dir/config/snakemake_config.yaml 
+    sed -i "s/OUTPUT_dir/$output_dir/g" $output_dir/config/snakemake_config.yaml
+    sed -i "s/PIPELINE_dir/$PIPELINE_HOME/g" $output_dir/config/snakemake_config.yaml
 
     snakemake -s workflow/Snakefile \
     --configfile config/snakemake_config.yaml \

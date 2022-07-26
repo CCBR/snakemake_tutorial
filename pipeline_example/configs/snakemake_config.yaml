@@ -1,6 +1,6 @@
 # path to directories
-out_dir: "/path/to/output/dir/"
-data_dir: "/snakemake_tutorial/data/"
+out_dir: "OUTPUT_DIR"
+data_dir: "PIPELINE_dir/data/"
 
 #path to manifest files
 sampleManifest: "/snakemake_tutorial/manifests/samples.tsv"
