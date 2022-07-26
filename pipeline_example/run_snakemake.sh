@@ -31,24 +31,35 @@ if [ -z "$pipeline" ] || [ -z "$output_dir" ]; then
    helpFunction
 fi
 
+#remove trailing / on directories
+output_dir=$(echo $output_dir | sed 's:/*$::')
+
 # set source_dir
 PIPELINE_HOME=$(readlink -f $(dirname "$0"))
 
+# initialize
+if [[ ! -d $output_dir ]]; then mkdir $output_dir; fi
+dir_list=(config)
+for pd in "${dir_list[@]}"; do if [[ ! -d $output_dir/$pd ]]; then mkdir -p $output_dir/$pd; fi; done
+
+files_save=('config/snakemake_config.yaml' 'workflow/Snakefile')
+for f in ${files_save[@]}; do
+    f="${PIPELINE_HOME}/$f"
+    IFS='/' read -r -a strarr <<< "$f" 
+    sed -e "s/PIPELINE_HOME/${PIPELINE_HOME//\//\\/}/g" -e "s/OUTPUT_DIR/${output_dir//\//\\/}/g" $f > "${output_dir}/config/${strarr[-1]}"
+
+done
 
 if [[ $pipeline == "dry" ]]; then
     echo "------------------------------------------------------------------------"
 	echo "*** STARTING DryRun ***"
     module load snakemake python
-    if [[ ! -d $output_dir ]]; then mkdir $output_dir; fi
-    cp config/snakemake_config.yaml $output_dir/config/snakemake_config.yaml 
-    sed -i "s/OUTPUT_dir/$output_dir/g" $output_dir/config/snakemake_config.yaml
-    sed -i "s/PIPELINE_dir/$PIPELINE_HOME/g" $output_dir/config/snakemake_config.yaml
 
-    snakemake -s workflow/Snakefile \
+    snakemake -s $output_dir/config/Snakefile \
     --configfile $output_dir/config/snakemake_config.yaml \
     --printshellcmds \
     --verbose \
-    --rerun-incomplete
+    --rerun-incomplete \
     -npr
 
 elif [[ $pipeline == "run" ]]; then
@@ -56,16 +67,12 @@ elif [[ $pipeline == "run" ]]; then
 	echo "*** STARTING Local Execution ***"
     module load snakemake python
 
-    if [[ ! -d $output_dir ]]; then mkdir $output_dir; fi
-    cp config/snakemake_config.yaml $output_dir/config/snakemake_config.yaml 
-    sed -i "s/OUTPUT_dir/$output_dir/g" $output_dir/config/snakemake_config.yaml
-    sed -i "s/PIPELINE_dir/$PIPELINE_HOME/g" $output_dir/config/snakemake_config.yaml
-
-    snakemake -s workflow/Snakefile \
+    snakemake -s $output_dir/config/Snakefile \
     --configfile $output_dir/config/snakemake_config.yaml \
     --printshellcmds \
     --verbose \
-    --rerun-incomplete
+    --rerun-incomplete \
+    --cores 1
 
 else 
     echo "Select the options dry or run with the -p flag"

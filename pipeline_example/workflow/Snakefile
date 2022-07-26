@@ -31,8 +31,8 @@ def CreateProjLists(dict_s):
 
     #multiplex,sample
     for k,v in dict_s.items():
-        file_list.append(k)
-        sp_list.append(v)
+        file_list.append(v)
+        sp_list.append(k)
     return(sp_list,file_list)
 
 ###############################################################
@@ -45,16 +45,33 @@ def get_input_files(wildcards):
     return(fq)
 
 def get_rulec_cmd(wildcards):
+    cmd='cat '
+    sp_paths=''
+    for sp in sp_list:
+        # set source (ruleB) and destination files
+        source = join(out_dir, sp + '_rulea.txt')
+
+        # create command
+        sp_paths = source + ' ' + sp_paths
+    
+    # add output path    
+    destination = join(out_dir, 'final_output','merged_rulea.txt')
+    cmd = cmd + sp_paths + ' >> ' + destination
+
+    return(cmd)
+
+def get_ruled_cmd(wildcards):
     cmd=''
     for sp in sp_list:
         # set source (ruleB) and destination files
-        source = join(out_dir, sp + '_ruleB.txt')
-        destination = join(out_dir, 'merged.txt')
+        source = join(out_dir, wildcards.sp + '_ruleb.txt')
+        destination = join(out_dir, 'final_output', wildcards.sp + '_copied_ruleb.txt')
 
-        # create command
-        cmd = 'cat ' + source + ' >> ' + destination + '; ' + cmd
+        # cp the the files
+        cmd = 'cp ' + source + ' ' + destination + '; ' + cmd
+        print(cmd)
+
     return(cmd)
-    
 ###############################################################
 # main code
 ###############################################################
@@ -70,51 +87,71 @@ df_samples = pd.read_csv(sample_manifest,sep=",")
 #sample1        sample2.fq
 (sp_list,file_list) = CreateProjLists(samp_dict)
 
+print(sp_list)
 rule all:
     input:
         # input files
-        expand(join(data_dir,'{fq}'),fq=file_list)
+        expand(join(data_dir,'{fq}'),fq=file_list),
 
         # ruleA output
-        expand(join(out_dir,'{sp}_rulea.txt'),sp=sp_list)
+        expand(join(out_dir,'{sp}_rulea.txt'),sp=sp_list),
  
         # ruleB output
-        expand(join(out_dir,'{sp}_ruleb.txt'),sp=sp_list)
+        expand(join(out_dir,'{sp}_ruleb.txt'),sp=sp_list),
 
         # ruleC output
-        expand(join(out_dir,'merged.txt'))
+        join(out_dir,'final_output','merged_rulea.txt'),
 
+        # ruleD output
+        expand(join(out_dir,'final_output','{sp}_copied_ruleb.txt'),sp=sp_list)
 
-ruleA:
+rule A:
     input:
-        fq = join(data_dir,'{sp}.tsv')
+        fq = join(data_dir,'{sp}.fq')
     output:
-        final = join(out_dir,'{sp}_rulea.txt')
+        final = temp(join(out_dir,'{sp}_rulea.txt'))
     shell:
         '''
         cat {input.fq} > {output.final}
-        echo "ruleA" >> {output.final}
+        echo "\nruleA completed" >> {output.final}
         '''
 
-ruleB:
+rule B:
     input:
         fq = get_input_files
     output:
-        final = join(out_dir,'{sp}_ruleb.txt')
+        final = temp(join(out_dir,'{sp}_ruleb.txt'))
     shell:
         '''
         cat {input.fq} > {output.final}
-        echo "ruleB" >> {output.final}
+        echo "\nruleB completed" >> {output.final}
         '''
 
-ruleC:
+rule C:
     input:
-        grouped = expand(join(out_dir,'{sp}_ruleb.txt'))
+        rulea = expand(join(out_dir,'{sp}_rulea.txt'),sp=sp_list)
     params:
-        cmd = cmd_rulec
+        cmd = get_rulec_cmd
     output:
-        final = join(out_dir,'merged.txt')
+        final = join(out_dir,'final_output','merged_rulea.txt')
     shell:
         '''
-        {params.rulec}
+        # create the final output file
+        touch {output.final}
+
+        # run the cat command
+        {params.cmd}
+        '''
+
+rule D:
+    input:
+        ruleb = rules.B.output.final
+    params:
+        cmd = get_ruled_cmd
+    output:
+        final = join(out_dir, 'final_output', '{sp}_copied_ruleb.txt')
+    shell:
+        '''
+        # run the command
+        {params.cmd}
         '''
