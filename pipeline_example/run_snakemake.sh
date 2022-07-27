@@ -42,10 +42,17 @@ if [[ ! -d $output_dir ]]; then mkdir $output_dir; fi
 dir_list=(config log)
 for pd in "${dir_list[@]}"; do if [[ ! -d $output_dir/$pd ]]; then mkdir -p $output_dir/$pd; fi; done
 
+# saving files, updating the configs with correct paths
 files_save=('config/snakemake_config.yaml' 'workflow/Snakefile' 'config/cluster_config.yaml')
 for f in ${files_save[@]}; do
+    # set absolute path of file
     f="${PIPELINE_HOME}/$f"
+
+    # create an array of the absolute path, with the delimiter of "/"
     IFS='/' read -r -a strarr <<< "$f" 
+
+    # replace the variables PIPELINE_HOME and OUTPUT_dir in any files within the files_save array ($f)
+    # save this output to the file name (strarr[-1]) in the output_dir/config location
     sed -e "s/PIPELINE_HOME/${PIPELINE_HOME//\//\\/}/g" -e "s/OUTPUT_DIR/${output_dir//\//\\/}/g" $f > "${output_dir}/config/${strarr[-1]}"
 
 done
@@ -92,11 +99,14 @@ elif [[ $pipeline == "cluster" ]]; then
     --rerun-incomplete \
     --latency-wait 120 \
     --use-envmodules \
+    --cores 1 \
+    -j 10 \
     --cluster-config ${output_dir}/config/cluster_config.yaml \
-        cluster "sbatch --gres {cluster.gres} --cpus-per-task {cluster.threads} \
-        -p {cluster.partition} -t {cluster.time} --mem {cluster.mem} --job-name={params.rname} \
-        --output=${output_dir}/log/{params.rname}{cluster.output} \
-        --error=${output_dir}/log/{params.rname}{cluster.error}"
+    --cluster \
+    "sbatch --gres {cluster.gres} --cpus-per-task {cluster.threads} \
+    -p {cluster.partition} -t {cluster.time} --mem {cluster.mem} --job-name={params.rname} \
+    --output=${output_dir}/log/{params.rname}{cluster.output} \
+    --error=${output_dir}/log/{params.rname}{cluster.error}"
 
 else 
     echo "Select the options dry, local, cluster with the -p flag"
