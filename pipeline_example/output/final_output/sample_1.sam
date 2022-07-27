@@ -1,0 +1,4 @@
+@HD	VN:1.0	SO:coordinate_sample1
+@SQ	SN:KZ289075.1	LN:322221	AS:GRCm38.p6.genome.gencodeM23_BK000964.3.FullGenome_Trnstome.SplicedTransc_71.nix	M5:d7b515fa6aea64252deadb88f21520aa
+@PG	ID:samtools	PN:samtools	VN:1.15.1	CL:samtools view -Sb -
+@PG	ID:samtools.1	PN:samtools	PP:samtools	VN:1.15.1	CL:samtools view -H -@ 1 /spin1/home/linux/sevillas2/git/snakemake_tutorial/pipeline_example/data/sample_1.bam
