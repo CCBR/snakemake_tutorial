@@ -11,18 +11,23 @@ import csv
 
 # manifests
 
+# to use with advanced rules
+with open(join(out_dir,'config','cluster_config.yaml')) as file:
+    CLUSTER = yaml.load(file, Loader=yaml.FullLoader)
+getthreads=lambda rname:int(CLUSTER[rname]["threads"]) if rname in CLUSTER and "threads" in CLUSTER[rname] else int(CLUSTER["__default__"]["threads"])
+
 ###############################################################
 # create sample lists
 ###############################################################
 #dict sample_id: filename
 def CreateSampleDicts(df_s):
 
-    return(s_dict)
+    return(fq_dict,bam_dict)
 
 #create lists of sample ids, filenames
-def CreateProjLists(dict_s):
+def CreateProjLists(dict_f,dict_b):
 
-    return(sp_list,file_list)
+    return(sp_list,fq_list,bam_list)
 
 ###############################################################
 # snakemake functions
@@ -46,14 +51,17 @@ def get_ruled_cmd(wildcards):
 df_samples = pd.read_csv(sample_manifest,sep=",")
 
 #create dicts
-(samp_dict) = CreateSampleDicts(df_samples)
+(fastq_dict,bam_dict) = CreateSampleDicts(df_samples)
 
-#create unique sample_id and filename_list
-#sp_list    filename
-#sample1        sample1.fq
-#sample1        sample2.fq
-(sp_list,file_list) = CreateProjLists(samp_dict)
+#create unique sample_id and fq_list
+#sp_list    fqname          bamname
+#sample_1    sample_1.fq    sample_1.bam
+#sample_2    sample_2.fq    sample_2.bam
+(sp_list,fq_list,bam_list) = CreateProjLists(fastq_dict,bam_dict)
 
+# specify local rules
+
+# specify rule_all
 rule all:
     input:
         # input files
@@ -65,6 +73,9 @@ rule all:
         # ruleC output
 
         # ruleD output
+        
+        # ruleE output
+
 
 # rule A:
 #     input:
@@ -87,5 +98,13 @@ rule all:
 # rule D:
 #     input:
 #     params:
+#     output:
+#     shell:
+
+#rule E:
+#     input:
+#     params:
+#     envmodules:
+#     threads:
 #     output:
 #     shell:

@@ -42,13 +42,18 @@ if [[ $pipeline == "dry" ]]; then
 	echo "*** STARTING DryRun ***"
     module load snakemake python
 
-elif [[ $pipeline == "run" ]]; then
+elif [[ $pipeline == "local" ]]; then
     echo "------------------------------------------------------------------------"
 	echo "*** STARTING Local Execution ***"
     module load snakemake python
 
+elif [[ $pipeline == "cluster" ]]; then
+    echo "------------------------------------------------------------------------"
+	echo "*** STARTING Cluster Execution ***"
+    module load snakemake python
+
 
 else 
-    echo "Select the options dry or run with the -p flag"
+    echo "Select the options dry, local, cluster with the -p flag"
 
 fi

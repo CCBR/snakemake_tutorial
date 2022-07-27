@@ -4,3 +4,5 @@ data_dir: "PIPELINE_HOME/data/"
 
 #path to manifest files
 sampleManifest: "PIPELINE_HOME/manifests/samples.csv"
+
+# modules

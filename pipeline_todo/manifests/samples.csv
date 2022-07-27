@@ -1,3 +1,3 @@
-sample_id,filename
-sample_1,sample_1.fq
-sample_2,sample_2.fq
+sample_id,fq_file,bam_file
+sample_1,sample_1.fq,sample_1.bam
+sample_2,sample_2.fq,sample_2.bam
