@@ -75,11 +75,13 @@ Complete each of the following tasks, in order. Be sure to perform dry runs and 
         - flag rule A and rule B files so they are deleted after the pipeline completion
     - Link rule names to log files
         - all rules must have a param called `rname` where the rule name is identified uniquely
-- Utilize `cluster` for rules
+- Add initializtion features to the pipeline
     - Add features to the `run_snakemake.sh` file to include:
         - check if output_dir or output_dir/log are created; if not create them during invocation of the `run_snakemake.sh` file
         - copy the config/snakemake_config.yaml, config/cluster_config.yaml to the output_dir; ensure snakemake runs use these files
         - update all config files with the `output_dir` variable given from the command line and `pipeline_dir` variable based on the invocation location of the pipeline;
+- Utilize `cluster` for rules
+    - Add features to the `run_snakemake.sh` file to include:
         - update the copies `cluster_config.yaml` to change the time limit from `2` hours to `1` hour and threads from `4` to `2` for Rule E
     - Add a new command to the `run_snakemake.sh` file:
         - name the new command `cluster`. This command will include all of the previous flags of `local`.
