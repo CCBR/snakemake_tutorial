@@ -99,7 +99,7 @@ Complete each of the following tasks, in order. Be sure to perform dry runs and 
         - expand the `cluster` command further, with additional snakemake cluster flags:
             - `cluster "sbatch --gres {cluster.gres} --cpus-per-task {cluster.threads} -p {cluster.partition} -t {cluster.time} --mem {cluster.mem} --job-name={params.rname} --output=${output_dir}/log/{params.rname}{cluster.output} --error=${output_dir}/log/{params.rname}{cluster.error}"`
 - Rule E
-     General Tasks
+    - General Tasks
         - Create rule_all input for all bam input files, from the `bam_list`
     - input files should be `{sample_id}.fq`
     - envmodules should load the samtools version `samtools/1.15.1` from the `snakemake_config.yaml` file

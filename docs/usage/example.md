@@ -57,24 +57,31 @@ total        10             1              1
 
 # Expected Output Files / Structure
 - The output of Rule A:
+```
 ├── sample_1_rulea.txt
 ├── sample_2_rulea.txt
+```
 
 - The output of Rule B:
+```
 ├── sample_1_rulea.txt
 ├── sample_1_ruleb.txt
 ├── sample_2_rulea.txt
 ├── sample_2_ruleb.txt
+```
 
 - The output of Rule C:
+```
 ├── final_output
 │   ├── merged_rulea.txt
 ├── sample_1_rulea.txt
 ├── sample_1_ruleb.txt
 ├── sample_2_rulea.txt
 └── sample_2_ruleb.txt
+```
 
 - The output of Rule D:
+```
 ├── final_output
 │   ├── merged_rulea.txt
 │   ├── sample_1_copied_ruleb.txt
@@ -83,20 +90,25 @@ total        10             1              1
 ├── sample_1_ruleb.txt
 ├── sample_2_rulea.txt
 └── sample_2_ruleb.txt
+```
 
 - The output of advanced tasks:
+```
 final_output/
 ├── merged_rulea.txt
 ├── sample_1_copied_ruleb.txt
 └── sample_2_copied_ruleb.txt
+```
 
 - The output of Rule E:
+```
 final_output/
 ├── merged_rulea.txt
 ├── sample_1_copied_ruleb.txt
 ├── sample_1.sam
 ├── sample_2_copied_ruleb.txt
 └── sample_2.sam
+```
 
 # Explanations
 ## General Notes
