@@ -1,12 +1,11 @@
 # Project Information
-site_name: iCLIP
+site_name: Snakemake Tutorial
 site_author: Samantha Sevilla, Ph.D.
-site_description: >-
-  iCLIP Pipeline
+site_description: Snakemake Tutorial
 # Repository
 repo_name: slsevilla/snakemake_tutorial
 repo_url: https://github.com/slsevilla/snakemake_tutorial
-edit_uri: https://github.com/slsevilla/iCLIP/edit/main/docs/
+edit_uri: https://github.com/slsevilla/snakemake_tutorial/edit/main/docs/
 
 # Copyright
 copyright: Copyright &copy; 2022 CCBR
@@ -32,7 +31,6 @@ theme:
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
-  logo: img/metro_logo.png
   favicon: img/fred_logo.png
 
 # Plugins
