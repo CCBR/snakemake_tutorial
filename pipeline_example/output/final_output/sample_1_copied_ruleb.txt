@@ -1,4 +1,2 @@
-@sampledata2 goeshere
-ruleB completed
 @sampledata1 goeshere
 ruleB completed
