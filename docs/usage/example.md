@@ -301,6 +301,7 @@ E:
     --use-envmodules \
     --cores 1 \
     --cluster-config ${output_dir}/config/cluster_config.yaml \
+    -j 5 \
     --cluster \
     "sbatch --gres {cluster.gres} --cpus-per-task {cluster.threads} \
     -p {cluster.partition} -t {cluster.time} --mem {cluster.mem} --job-name={params.rname} \

@@ -94,7 +94,8 @@ Complete each of the following tasks, in order. Be sure to perform dry runs and 
         - expand the `cluster` command further, with additional snakemake flags:
             - `--latency-wait 120`
             - `--use-envmodules`
-            - `--cluster-config ${output_dir}/log/cluster_config.yml`
+            - `-j 5`
+            - `--cluster-config ${output_dir}/config/cluster_config.yml`
         - expand the `cluster` command further, with additional snakemake cluster flags:
             - `cluster "sbatch --gres {cluster.gres} --cpus-per-task {cluster.threads} -p {cluster.partition} -t {cluster.time} --mem {cluster.mem} --job-name={params.rname} --output=${output_dir}/log/{params.rname}{cluster.output} --error=${output_dir}/log/{params.rname}{cluster.error}"`
 - Rule E
