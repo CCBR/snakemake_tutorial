@@ -39,7 +39,7 @@ PIPELINE_HOME=$(readlink -f $(dirname "$0"))
 
 # initialize
 if [[ ! -d $output_dir ]]; then mkdir $output_dir; fi
-dir_list=(config)
+dir_list=(config log)
 for pd in "${dir_list[@]}"; do if [[ ! -d $output_dir/$pd ]]; then mkdir -p $output_dir/$pd; fi; done
 
 files_save=('config/snakemake_config.yaml' 'workflow/Snakefile' 'config/cluster_config.yaml')
