@@ -1,0 +1,13 @@
+# cluster configuration
+__default__:
+    gres: lscratch:96
+    mem: 3g
+    partition: ccr,norm
+    time: 00-02:00:00
+    threads: 4
+    output: .%j.{wildcards}.out
+    error: .%j.{wildcards}.err
+
+E:
+  time: 00-01:00:00
+  threads: 2

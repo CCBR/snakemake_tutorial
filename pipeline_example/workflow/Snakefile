@@ -14,34 +14,49 @@ data_dir = config['data_dir']
 # manifests
 sample_manifest = config['sampleManifest']
 
+# to use with advanced rules
+with open(join(out_dir,'config','cluster_config.yaml')) as file:
+    CLUSTER = yaml.load(file, Loader=yaml.FullLoader)
+getthreads=lambda rname:int(CLUSTER[rname]["threads"]) if rname in CLUSTER and "threads" in CLUSTER[rname] else int(CLUSTER["__default__"]["threads"])
+
 ###############################################################
 # create sample lists
 ###############################################################
-#dict sample_id: filename
+#dict sample_id: fq_file and sample_id: bam_file
 def CreateSampleDicts(df_s):
-    s_dict={}
-    s_dict = dict(zip(df_s.sample_id, df_s.filename))
+    fq_dict={}
+    fq_dict = dict(zip(df_s.sample_id, df_s.fq_file))
 
-    return(s_dict)
+    bam_dict={}
+    bam_dict = dict(zip(df_s.sample_id, df_s.bam_file))
 
-#create lists of sample ids, filenames
-def CreateProjLists(dict_s):
+    return(fq_dict,bam_dict)
+
+#create lists of sample_ids, fq_file, bam_file
+def CreateProjLists(dict_f,dict_b):
     sp_list = []
-    file_list = []
+    fq_list = []
+    bam_list = []
 
-    #multiplex,sample
-    for k,v in dict_s.items():
-        file_list.append(v)
+    #fq,sample
+    for k,v in dict_f.items():
         sp_list.append(k)
-    return(sp_list,file_list)
+        fq_list.append(v)
+
+    #bam,sample
+    for k,v in dict_b.items():
+        sp_list.append(k)
+        bam_list.append(v)
+
+    return(sp_list,fq_list,bam_list)
 
 ###############################################################
 # snakemake functions
 ###############################################################
 #get list of fq names based on multiplex name
 def get_input_files(wildcards):
-    #example: {data_dir}/{sample_id.fastq.gz}
-    fq = join(data_dir,samp_dict[wildcards.sp])
+    #example: {data_dir}/{sample_id.fq}
+    fq = join(data_dir,fastq_dict[wildcards.sp])
     return(fq)
 
 def get_rulec_cmd(wildcards):
@@ -69,7 +84,6 @@ def get_ruled_cmd(wildcards):
 
         # cp the the files
         cmd = 'cp ' + source + ' ' + destination + '; ' + cmd
-        print(cmd)
 
     return(cmd)
 ###############################################################
@@ -79,18 +93,23 @@ def get_ruled_cmd(wildcards):
 df_samples = pd.read_csv(sample_manifest,sep=",")
 
 #create dicts
-(samp_dict) = CreateSampleDicts(df_samples)
+(fastq_dict,bam_dict) = CreateSampleDicts(df_samples)
 
-#create unique sample_id and filename_list
-#sp_list    filename
-#sample1        sample1.fq
-#sample1        sample2.fq
-(sp_list,file_list) = CreateProjLists(samp_dict)
+#create unique sample_id and fq_list
+#sp_list    fqname          bamname
+#sample_1    sample_1.fq    sample_1.bam
+#sample_2    sample_2.fq    sample_2.bam
+(sp_list,fq_list,bam_list) = CreateProjLists(fastq_dict,bam_dict)
 
+# specify local rules
+localrules: A, B, C, D
+
+# specify rule_all
 rule all:
     input:
         # input files
-        expand(join(data_dir,'{fq}'),fq=file_list),
+        expand(join(data_dir,'{fq}'),fq=fq_list),
+        expand(join(data_dir,'{bm}'),bm=bam_list),
 
         # ruleA output
         expand(join(out_dir,'{sp}_rulea.txt'),sp=sp_list),
@@ -102,11 +121,16 @@ rule all:
         join(out_dir,'final_output','merged_rulea.txt'),
 
         # ruleD output
-        expand(join(out_dir,'final_output','{sp}_copied_ruleb.txt'),sp=sp_list)
+        expand(join(out_dir,'final_output','{sp}_copied_ruleb.txt'),sp=sp_list),
+
+        # ruleE output
+        expand(join(out_dir, 'final_output', '{sp}.sam'),sp=sp_list)
 
 rule A:
     input:
         fq = join(data_dir,'{sp}.fq')
+    params:
+        rname='rule_A',
     output:
         final = temp(join(out_dir,'{sp}_rulea.txt'))
     shell:
@@ -118,6 +142,8 @@ rule A:
 rule B:
     input:
         fq = get_input_files
+    params:
+        rname='rule_B',
     output:
         final = temp(join(out_dir,'{sp}_ruleb.txt'))
     shell:
@@ -130,6 +156,7 @@ rule C:
     input:
         rulea = expand(join(out_dir,'{sp}_rulea.txt'),sp=sp_list)
     params:
+        rname='rule_C',
         cmd = get_rulec_cmd
     output:
         final = join(out_dir,'final_output','merged_rulea.txt')
@@ -146,6 +173,7 @@ rule D:
     input:
         ruleb = rules.B.output.final
     params:
+        rname='rule_D',
         cmd = get_ruled_cmd
     output:
         final = join(out_dir, 'final_output', '{sp}_copied_ruleb.txt')
@@ -153,4 +181,19 @@ rule D:
         '''
         # run the command
         {params.cmd}
+        '''
+
+rule E:
+    input:
+        bamfile = join(data_dir,'{sp}.bam')
+    envmodules:
+        config['samtools']
+    params:
+        rname='rule_E',
+    threads: getthreads("E")
+    output:
+        final = join(out_dir, 'final_output', '{sp}.sam')
+    shell:
+        '''
+        samtools view -H -@ {threads} {input.bamfile} > {output.final}
         '''

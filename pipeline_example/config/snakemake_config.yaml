@@ -2,5 +2,8 @@
 out_dir: "OUTPUT_DIR"
 data_dir: "PIPELINE_HOME/data/"
 
-#path to manifest files
+# path to manifest files
 sampleManifest: "PIPELINE_HOME/manifests/samples.csv"
+
+# modules
+samtools: "samtools/1.15.1"
