@@ -99,6 +99,6 @@ elif [[ $pipeline == "cluster" ]]; then
         --error=${output_dir}/log/{params.rname}{cluster.error}"
 
 else 
-    echo "Select the options dry or run with the -p flag"
+    echo "Select the options dry, local, cluster with the -p flag"
 
 fi
